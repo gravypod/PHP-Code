@@ -6,7 +6,7 @@ if (empty($_FILES["file"]) or !isset($_FILES["file"])) { // Check if we really h
 
 } else {
 
-	include 'UploadManager.php';
+	require_once 'UploadManager.php';
 
 	$manager = new UploadManager($_FILES["file"]); // Create out upload manager
 

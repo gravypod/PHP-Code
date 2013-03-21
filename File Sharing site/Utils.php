@@ -1,14 +1,19 @@
 <?php
 
+
 	/**
 	 * Class Utils
 	 */
 	class Utils
 	{
 
-		private static $protocall = "http://";
+		/**
+		 * @var bool - True if we are in debugging mode.
+		 */
+		public static $debugging = false;
+		private static $protocol = "http://";
 		private static $storageLocation = "uploads/"; // Uploads directory
-		private static $installDir = "downloader/"; // URL of the iste
+		private static $installDir = "downloader/"; // URL of the site
 
 		/**
 		 * @param $fileLocation - Temp file location
@@ -47,6 +52,11 @@
 
 		}
 
+		public static function getServerUrl()
+		{
+			return Utils::$protocol . $_SERVER['HTTP_HOST'] . "/" . Utils::$installDir;
+		}
+
 		/**
 		 * @param $name - Name of the file
 		 *
@@ -54,7 +64,7 @@
 		 */
 		public static function downloadLink($name)
 		{
-			return Utils::$protocall . $_SERVER['HTTP_HOST'] . "/" . Utils::$installDir . "download.php?download=" . $name;
+			return Utils::getServerUrl() . "download.php?download=" . $name;
 		}
 
 	}

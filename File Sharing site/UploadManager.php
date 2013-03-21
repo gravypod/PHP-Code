@@ -1,7 +1,7 @@
 <?php
 
-	include 'Utils.php';
-	include 'DatabaseManager.php';
+	require_once 'Utils.php';
+	require_once 'DatabaseManager.php';
 
 	/**
 	 * Class UploadManager
@@ -18,7 +18,6 @@
 		private $storingLocation; // Storing location of the file
 		private $downloadLink; // Download location
 		private $tempName; // Temp file name
-		private $isInTemp;
 
 		/**
 		 * Manage file uploads to the server
@@ -33,17 +32,14 @@
 
 			$this->tempName = $downloading['tmp_name'];
 
-			$this->isInTemp = is_uploaded_file($this->tempName);
+			$this->hashedName = Utils::getStoredName($this->tempName);
 
-			if ($this->isInTemp) {
-				$this->database = new DatabaseManager();
+			$this->storingLocation = Utils::getStorageLocation($this->tempName);
 
-				$this->hashedName = Utils::getStoredName($this->tempName);
+			$this->downloadLink = Utils::downloadLink($this->hashedName);
 
-				$this->storingLocation = Utils::getStorageLocation($this->tempName);
+			$this->database = new DatabaseManager();
 
-				$this->downloadLink = Utils::downloadLink($this->hashedName);
-			}
 		}
 
 		/**
@@ -53,12 +49,8 @@
 		 */
 		public function attemptStore()
 		{
-			if (!$this->isInTemp) {
-				return "something went wrong! " . printf($_FILES);
-			}
-			$outcome = $this->isValid();
 
-			switch ($outcome) {
+			switch ($this->isValid()) {
 				case "SIZE":
 					$output = "That file is too large!";
 					break;
@@ -71,11 +63,7 @@
 					break;
 				default:
 					$output = "Something strange happened!";
-
-					return $output;
 			}
-
-			$this->database->close();
 
 			return $output;
 

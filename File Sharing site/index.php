@@ -45,7 +45,8 @@
 
 			<form action="upload.php" method="post" enctype="multipart/form-data" class="chooseFile">
 				<h2 class="heading">Choose a File</h2>
-				<input type="file" name="file" id="file"></br>
+				<input type="hidden" id="MAX_FILE_SIZE" name="MAX_FILE_SIZE" value="300000" />
+				<input type="file" name="file" id="file">
 				<button class="btn btn-large btn-primary" type="submit">Upload</button>
 			</form>
 

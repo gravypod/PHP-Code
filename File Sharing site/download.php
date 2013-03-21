@@ -2,11 +2,11 @@
 
 	if (!isSet($_GET['download']) or empty($_GET['download'])) { // Check if we have a file to download
 
-		echo "No file set!";
+		echo "No file specified";
 
 	} else {
 
-		include 'DownloadManager.php';
+		require_once ('DownloadManager.php');
 
 		$fileName = $_GET['download']; // Get the file name
 
@@ -16,5 +16,3 @@
 
 		$manager->sendToUser(); // send to out user
 	}
-
-?>

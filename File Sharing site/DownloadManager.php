@@ -1,7 +1,7 @@
 <?php
 
-	include 'Utils.php';
-	include 'DatabaseManager.php';
+	require_once 'Utils.php';
+	require_once 'DatabaseManager.php';
 
 	class DownloadManager
 	{
@@ -20,7 +20,6 @@
 
 			$this->unHashedName = $database->getFileNameFromHash($this->hashedName); // Get the real file name
 
-			$database->close(); // Close off file handle
 		}
 
 		/**

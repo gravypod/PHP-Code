@@ -1,42 +1,32 @@
 <?php
 
+	require_once "Utils.php";
+
 	class DatabaseManager
 	{
 
 		private $database; // Instance of the database
-
 		private $initDB = "CREATE TABLE IF NOT EXISTS Files(hash TEXT, name TEXT)"; // initiation of the database
-
 		private $addFile = "INSERT INTO Files(Hash, Name) VALUES (:hash, :name)"; // Prepared statements
-
 		private $findName = "SELECT name FROM Files WHERE hash=:hash LIMIT 1";
 
 		public function DatabaseManager()
 		{
 
-			$this->database = new SQLite3('files.db');
+			$this->database = new PDO("sqlite:./database/files.db");
 
-			if (!$this->database) {
-
-				die($this->database->lastErrorMsg());
-
+			if (Utils::$debugging) {
+				$this->database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			}
 
-			if (!$this->initDB()) {
-
-				die("Cannot execute query" . $this->database->lastErrorMsg());
-
-			}
+			$this->initDB();
 
 		}
 
-		/**
-		 * @return bool - If the db has fully initialized
-		 */
 		public function initDB()
 		{
 
-			return $this->database->exec($this->initDB);
+			$this->database->exec($this->initDB);
 
 		}
 
@@ -49,9 +39,9 @@
 
 			$addFilePrep = $this->database->prepare($this->addFile);
 
-			$addFilePrep->bindValue(":hash", substr(SQLite3::escapeString($hash), 0, 32), SQLITE3_TEXT);
+			$addFilePrep->bindValue(":hash", $this->filterHash($hash), PDO::PARAM_STR);
 
-			$addFilePrep->bindValue(":name", SQLite3::escapeString($name), SQLITE3_TEXT);
+			$addFilePrep->bindValue(":name", $name);
 
 			$addFilePrep->execute();
 
@@ -67,21 +57,24 @@
 
 			$getFilePrep = $this->database->prepare($this->findName);
 
-			$getFilePrep->bindValue(":hash", substr(SQLite3::escapeString($hash), 0, 32), SQLITE3_TEXT);
+			$getFilePrep->bindValue(":hash", $this->filterHash($hash), PDO::PARAM_STR);
 
-			$row = $getFilePrep->execute()->fetchArray(SQLITE3_ASSOC);
+			$getFilePrep->execute();
+
+			$row = $getFilePrep->fetch(PDO::FETCH_ASSOC);
 
 			return $row["name"];
 
 		}
 
 		/**
-		 * Close off our handle
+		 * @param $hash - Hash to sterilize for DB lookup
+		 *
+		 * @return string - Filtered hash edited for entry/lookup with PDO
 		 */
-		public function close()
+		public function filterHash($hash)
 		{
-
-			$this->database->close();
-
+			return substr($hash, 0, 32);
 		}
+
 	}

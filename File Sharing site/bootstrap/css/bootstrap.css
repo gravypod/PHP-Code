@@ -4324,7 +4324,7 @@ a.thumbnail:focus {
   border-radius: 4px;
 }
 .progress .bar {
-  width: 0%;
+  width: 0;
   height: 100%;
   color: #ffffff;
   float: left;
