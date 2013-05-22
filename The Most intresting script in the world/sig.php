@@ -1,5 +1,7 @@
 <?php
 
+	include_once "StringManager.php";
+
 	header("Content-type: image/png");
 
 	if (!isset($_POST["type"])) {
@@ -56,19 +58,14 @@
 	}
 
 
-	$white = imagecolorallocate($image, $red, $green, $blue);
+	$textColour = imagecolorallocate($image, $red, $green, $blue);
 
-	if (strpos($line, ',') !== false) {
+	$stringManager = new StringManager($line);
+	$lines = $stringManager->getLines();
 
-		$quote = explode(", ", $line);
-		$quote[0] = $quote[0] . ",";
-		foreach ($quote as $q) {
-			imagettftext($image, $fontSize, 0, $startX, $startY, $white, $fontFileName, $q);
-			$startY += 23;
-		}
-
-	} else {
-		imagettftext($image, 20, 0, $startX, $startY, $white, $fontFileName, $line);
+	foreach ($lines as $q) {
+		imagettftext($image, $fontSize, 0, $startX, $startY, $textColour, $fontFileName, $q);
+		$startY += 23;
 	}
 
 	imagepng($image);
