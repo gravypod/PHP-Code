@@ -2,11 +2,27 @@
 
 	header("Content-type: image/png");
 
+	if (!isset($_POST["type"])) {
+		if (!isset($_GET["type"])) {
+			$innerFiles = glob('./types/*');
+			$sigDir = $innerFiles[array_rand($innerFiles)] . "/";
+		} else {
+			$sigDir = "./types/" . $_GET["type"] . "/";
+		}
+	} else {
+		$sigDir = "./types/" . $_POST["type"] . "/";
+	}
+
+	if (!file_exists($sigDir) and !is_dir($sigDir)) {
+		$innerFiles = glob('./types/*');
+		$sigDir = $innerFiles[array_rand($innerFiles)] . "/";
+	}
+
 	$startX = 5; // where the text will start
 	$startY = 30; // where the text will start
 	$fontSize = 20; // Size of the font
 	$lineJump = 23; // How much space to skip when writing a new line (y axis)
-	$imageFileName = "blankSig.jpg";
+	$imageFileName = $sigDir . "blankSig.jpg";
 	$fontFileName = "./font.ttf";
 	// Text colour
 	$red = 255;
@@ -15,7 +31,7 @@
 
 	if (!isset($_POST["text"])) {
 		if (!isset($_GET["text"])) {
-			$f_contents = file("quotes.txt");
+			$f_contents = file($sigDir . "quotes.txt");
 			$line = $f_contents[array_rand($f_contents)];
 		} else {
 			$line = $_GET["text"];
