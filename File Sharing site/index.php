@@ -1,59 +1,54 @@
+<?php
+
+	require_once "./assets/PHP/Utils.php";
+
+	if (isset($_POST["upload"]) or isset($_GET["upload"])) {
+		$upload = true;
+	}
+
+	if (isset($upload) and $upload === true) {
+		die(Utils::attemptFileUpload());
+	}
+
+	if (isset($_GET["download"])) {
+
+		$file = $_GET["download"];
+
+		Utils::attemptFileDownload($file);
+
+	}
+
+	header('Content-type: text/html; charset=utf-8');
+
+?>
 <!DOCTYPE HTML>
 <html lang="en">
-
 	<head>
-		<meta charset="utf-8">
-		<title>File Sharing Service</title>
-		<meta content="text/html">
-		<meta name="description" content="A simple file sharing website">
-		<meta name="author" content="Joshua D. Katz">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link href="./bootstrap/css/bootstrap.css" rel="stylesheet">
-
-		<style type="text/css">
-    		body {
-				padding-top: 40px;
-				padding-bottom: 40px;
-				background-color: #f5f5f5;
-			}
-
-			.chooseFile {
-				max-width: 300px;
-				padding: 19px 29px 29px;
-				margin: 0 auto 20px;
-				background-color: #fff;
-				border: 1px solid #e5e5e5;
-				-webkit-border-radius: 5px;
-				-moz-border-radius: 5px;
-				border-radius: 5px;
-				-webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
-				-moz-box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
-				box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
-			}
-
-			.chooseFile .heading {
-				margin-bottom: 10px;
-			}
-
-    	</style>
-
+		<meta id="infoLink" siteURL="<?php echo Utils::getServerUrl(); ?>" maxSize="<?php echo Utils::$maxSize; ?>">
+   	 	<title>File Sharing Service</title>
+ 		<link href="./assets/CSS/bootstrap.min.css" rel="stylesheet">
+    	<link href="./assets/CSS/style.css" rel="stylesheet">
 	</head>
-
-	<body class="body">
-
+	<body class="body text-center">
 		<div class="container">
+   	 		<form action="" method="post" enctype="multipart/form-data" class="main">
+      			<h2 class="heading text-center">Choose a File</h2>
+				<input hidden="true" type=”hidden” name=”upload” value=”true”>
+        		<button type="button" class="btn btn-large" onclick="fileChoose()">Choose Files</button>
+        		<input style="display: none;" type="file" name="file" multiple="multiple" id="file">
+        		<button class="btn btn-large btn-primary" type="submit" id="submit">Upload</button>
+    		</form>
+    		<div id="uploaded" class="main" style="display: none;">
+        		<h2>Uploaded Files</h2>
 
-			<form action="upload.php" method="post" enctype="multipart/form-data" class="chooseFile">
-				<h2 class="heading">Choose a File</h2>
-				<input type="hidden" id="MAX_FILE_SIZE" name="MAX_FILE_SIZE" value="300000" />
-				<input type="file" name="file" id="file">
-				<button class="btn btn-large btn-primary" type="submit">Upload</button>
-			</form>
-
+        		<div class="progress progress-striped active">
+         		   	<div class="bar" id="upload_bar"></div>
+        		</div>
+    		</div>
+			<noscript>
+       		 	<div class="main"><h1>You are missing out on some cool JS stuff man!</h1></div>
+    		</noscript>
 		</div>
-
-		<script src="./bootstrap/js/bootstrap.js"></script>
-		<script src="http://code.jquery.com/jquery.js"></script>
 	</body>
-
+	<script src="assets/JS/uploader.js"></script>
 </html>

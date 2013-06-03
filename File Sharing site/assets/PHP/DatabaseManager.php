@@ -74,7 +74,7 @@
 		 */
 		public function filterHash($hash)
 		{
-			return substr($hash, 0, 32);
+			return substr($hash, 0, Utils::getHashSize());
 		}
 
 	}
