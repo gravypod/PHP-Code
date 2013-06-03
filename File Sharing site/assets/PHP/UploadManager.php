@@ -10,13 +10,47 @@
 	class UploadManager
 	{
 
-		private $maxSize; // Max file size in MB
-		private $file; // File
-		private $name; // Name
-		private $tempName; // Temp file name
-		private $hashedName; // Hashed name of the file
-		private $storingLocation; // Storing location of the file
-		private $downloadLink; // Download location
+		/**
+		 * Max file size in MB
+		 * @var int
+		 */
+		private $maxSize;
+
+		/**
+		 * File the user is uploading
+		 * @var
+		 */
+		private $file;
+
+		/**
+		 * Name of the file the user is uploading
+		 * @var
+		 */
+		private $name;
+
+		/**
+		 * Temp name of the file
+		 * @var
+		 */
+		private $tempName;
+
+		/**
+		 * Hashed name of the file
+		 * @var string
+		 */
+		private $hashedName;
+
+		/**
+		 * Storage location of the file
+		 * @var string
+		 */
+		private $storingLocation;
+
+		/**
+		 * Download link for the file
+		 * @var string
+		 */
+		private $downloadLink;
 
 		/**
 		 * Manage file uploads to the server
@@ -49,7 +83,7 @@
 			}
 
 			// Convert size to MB and check to see if its over the max allowed size.
-			if ((($this->file["size"] / 1024) / 1024) > $this->maxSize) {
+			if ((($this->file["size"] / 1024) / 1024) > ($this->maxSize / 1024) / 1024) {
 				return "That file is too large! ";
 			}
 
@@ -73,7 +107,8 @@
 			return $this->name;
 		}
 
-		public function getDownloadLink() {
+		public function getDownloadLink()
+		{
 			return $this->downloadLink;
 		}
 

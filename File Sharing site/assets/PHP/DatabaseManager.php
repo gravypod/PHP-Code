@@ -6,10 +6,30 @@
 	{
 
 		private $database; // Instance of the database
+
+		/**
+		 * Query to setup the database
+		 * @var string
+		 */
 		private $initDB = "CREATE TABLE IF NOT EXISTS Files(hash TEXT, name TEXT)"; // initiation of the database
+
+		/**
+		 * Query to add a file into the database
+		 * @var string
+		 */
 		private $addFile = "INSERT INTO Files(Hash, Name) VALUES (:hash, :name)"; // Prepared statements
+
+		/**
+		 *
+		 * Query to find a file name from a hash
+		 *
+		 * @var string
+		 */
 		private $findName = "SELECT name FROM Files WHERE hash=:hash LIMIT 1";
 
+		/**
+		 * Class to manage all the database negotiation
+		 */
 		public function DatabaseManager()
 		{
 
@@ -23,7 +43,10 @@
 
 		}
 
-		public function initDB()
+		/**
+		 * Init the database and prepare it if it didn't exist
+		 */
+		private function initDB()
 		{
 
 			$this->database->exec($this->initDB);
@@ -48,6 +71,16 @@
 		}
 
 		/**
+		 * @param $hash - Hash to sterilize for DB lookup
+		 *
+		 * @return string - Filtered hash edited for entry/lookup with PDO
+		 */
+		public function filterHash($hash)
+		{
+			return substr($hash, 0, Utils::getHashSize());
+		}
+
+		/**
 		 * @param $hash - The hashed name of the file
 		 *
 		 * @return mixed - Get the real name
@@ -65,16 +98,6 @@
 
 			return $row["name"];
 
-		}
-
-		/**
-		 * @param $hash - Hash to sterilize for DB lookup
-		 *
-		 * @return string - Filtered hash edited for entry/lookup with PDO
-		 */
-		public function filterHash($hash)
-		{
-			return substr($hash, 0, Utils::getHashSize());
 		}
 
 	}

@@ -7,22 +7,48 @@
 	class Utils
 	{
 
-		public static $maxSize = 104857600;
-
 		/**
 		 * @var bool - True if we are in debugging mode.
 		 */
 		public static $debugging = false;
 
+		/**
+		 * Max size of a file
+		 * @var int
+		 */
+		public static $maxSize = 104857600;
+
+		/**
+		 * Tag to check for downloading a file
+		 * EX: $_POST[Utils::$downloadTag);
+		 * @var string
+		 */
 		public static $downloadTag = "download";
 
-		public static $javascriptUpload = "upload.php";
+		/**
+		 * Tag to check for uploading a file
+		 * EX: $_POST[Utils::$uploadTag);
+		 * @var string
+		 */
+		public static $uploadTag = "upload";
 
+		/**
+		 * Protocol to use
+		 * @var string
+		 */
 		private static $protocol = "http://";
 
-		private static $storageLocation = "../../uploads/"; // Uploads directory
+		/**
+		 * Location to store all the files
+		 * @var string
+		 */
+		private static $storageLocation = "../../uploads/";
 
-		private static $exprectedHashSize = 32;
+		/**
+		 * The size of a hash we get from a file
+		 * @var int
+		 */
+		private static $expectedHashSize = 32;
 
 		/**
 		 * @param $fileLocation - Temp file location
@@ -49,7 +75,7 @@
 
 			$storageName = md5_file($fileLocation);
 
-			return ($storageName);
+			return $storageName;
 
 		}
 
@@ -81,43 +107,64 @@
 			return $file;
 		}
 
+		/**
+		 * Attempt to store a file from a user
+		 * @return string - the message we want to send back for our JavaScript to interpret
+		 */
 		public static function attemptFileUpload()
 		{
 
 			require_once "UploadManager.php";
 
-			foreach ($_FILES['file']['name'] as $key => $name) { // TODO: Improve mulit-file handling
+			foreach ($_FILES['file']['name'] as $key => $name) { // Find all the files we are uploading
 
+				// Create our own file information array
 				$FILE['name'] = $_FILES['file']['name'][$key];
 
 				$FILE['tmp_name'] = $_FILES['file']['tmp_name'][$key];
 
 				$FILE['size'] = $_FILES['file']['size'][$key];
 
-				$manager = new UploadManager($FILE); // Create out upload manager
+				if (empty($FILE["name"]) or empty($FILE["size"]) or empty($FILE["tmp_name"])) {
+					continue;
+				} else {
 
-				// Hacky fix so PHP's encode function works (start)
+					$manager = new UploadManager($FILE); // Create out upload manager
 
-				$fs['message'] = $manager->processFile();
+					// Hacky fix so PHP's encode function works (start)
 
-				$fs['name'] = $manager->fileName();
+					$fs['message'] = $manager->processFile();
 
-				$fs['url'] = $manager->getDownloadLink();
+					$fs['name'] = $manager->fileName();
+
+					$fs['url'] = $manager->getDownloadLink();
 
 
-				$fileList[] = $fs;
-				// (end)
-
+					$fileList[] = $fs;
+					// (end)
+				}
 
 			}
 
 			unset($FILE);
 
+
+			// Return info to our JS client
+			if (!isset($fileList)) {
+				return json_encode(array("message" => "No files where set!", "name" => "", "url" => ""));
+			}
+
 			return json_encode($fileList);
 
 		}
 
-		public static function attemptFileDownload($file) {
+		/**
+		 * Attempt to send a file to a user
+		 *
+		 * @param $file - The file hash we want to use
+		 */
+		public static function attemptFileDownload($file)
+		{
 
 			if (!empty($file)) {
 				require_once('DownloadManager.php');
@@ -125,8 +172,6 @@
 				$fileName = $_GET['download']; // Get the file name
 
 				$manager = new DownloadManager($fileName); // Create a download manager
-
-				// TODO: Maybe add accounts and have paid-file access
 
 				$manager->sendToUser(); // send to out user
 			}
@@ -145,13 +190,22 @@
 			return Utils::getServerUrl() . "?" . Utils::$downloadTag . "=" . $name;
 		}
 
+		/**
+		 * Get the URL to the downloader script
+		 * @return string
+		 */
 		public static function getServerUrl()
 		{
 			return Utils::$protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		}
 
-		public static function getHashSize() {
-			return Utils::$exprectedHashSize;
+		/**
+		 * Output length of the current hash method
+		 * @return int
+		 */
+		public static function getHashSize()
+		{
+			return Utils::$expectedHashSize;
 		}
 
 	}

@@ -6,8 +6,15 @@
 	class DownloadManager
 	{
 
-		private $hashedName; // Hashed name of the file
-		private $unHashedName; // Un-hashed name of the file
+		/**
+		 * @var string - Hashed name of the file
+		 */
+		private $hashedName;
+
+		/**
+		 * @var string - Un-hashed name of the file
+		 */
+		private $unHashedName;
 
 		/**
 		 * @param $name - The name of the file

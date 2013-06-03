@@ -3,19 +3,15 @@
 	require_once "./assets/PHP/Utils.php";
 
 	if (isset($_POST["upload"]) or isset($_GET["upload"])) {
-		$upload = true;
-	}
-
-	if (isset($upload) and $upload === true) {
 		die(Utils::attemptFileUpload());
 	}
 
-	if (isset($_GET["download"])) {
-
-		$file = $_GET["download"];
-
-		Utils::attemptFileDownload($file);
-
+	if (!isset($_GET[Utils::$downloadTag])) {
+		if (isset($_POST[Utils::$downloadTag])) {
+			Utils::attemptFileDownload($_GET[Utils::$downloadTag]);
+		}
+	} else {
+		Utils::attemptFileDownload($_GET[Utils::$downloadTag]);
 	}
 
 	header('Content-type: text/html; charset=utf-8');
