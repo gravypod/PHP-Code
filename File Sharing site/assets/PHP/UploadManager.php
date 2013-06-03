@@ -83,7 +83,7 @@
 			}
 
 			// Convert size to MB and check to see if its over the max allowed size.
-			if ((($this->file["size"] / 1024) / 1024) > ($this->maxSize / 1024) / 1024) {
+			if ($this->file["size"] > $this->maxSize) {
 				return "That file is too large! ";
 			}
 
