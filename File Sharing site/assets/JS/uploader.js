@@ -82,12 +82,12 @@ var progressHandler = function (event) {
 	}
 };
 var loadHandler = function (event) {
-	element('upload_bar').style.display = 'none';
+	element('upload_bar').setAttribute("hidden", "false");
 };
 var errorHandler = function (event) {
 	alert("Upload failed");
 };
 window.addEventListener('load', function (event) {
-	element('uploaded').style.display = 'none';
+	element('uploaded').setAttribute("hidden", "true");
 	element('submit').addEventListener('click', handleUpload);
 });

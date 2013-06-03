@@ -42,7 +42,7 @@
 		 * Location to store all the files
 		 * @var string
 		 */
-		private static $storageLocation = "../../uploads/";
+		private static $storageLocation = "uploads/";
 
 		/**
 		 * The size of a hash we get from a file
@@ -88,17 +88,18 @@
 		public static function getStoredFromHash($name, $downloading = false)
 		{
 
-			$nameCharacters = str_split($name);
+			$splitName = str_split($name);
 
 			$location = Utils::$storageLocation;
 
-			foreach ($nameCharacters as $char) {
+			foreach ($splitName as $char) {
 				$location .= $char . "/";
 			}
 
 			$file = $location . $name;
 
 			if (!file_exists($file)) {
+
 				if (!$downloading) {
 					mkdir($location, 0777, true);
 				}
@@ -166,17 +167,11 @@
 		public static function attemptFileDownload($file)
 		{
 
-			if (!empty($file)) {
-				require_once('DownloadManager.php');
+			require_once('DownloadManager.php');
 
-				$fileName = $_GET['download']; // Get the file name
+			$manager = new DownloadManager($file); // Create a download manager
 
-				$manager = new DownloadManager($fileName); // Create a download manager
-
-				$manager->sendToUser(); // send to out user
-			}
-
-			unset($file);
+			$manager->sendToUser(); // send to out user
 
 		}
 

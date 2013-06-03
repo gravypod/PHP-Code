@@ -11,28 +11,22 @@
 	{
 
 		/**
-		 * Max file size in MB
-		 * @var int
-		 */
-		private $maxSize;
-
-		/**
-		 * File the user is uploading
-		 * @var
-		 */
-		private $file;
-
-		/**
 		 * Name of the file the user is uploading
-		 * @var
+		 * @var string
 		 */
 		private $name;
 
 		/**
 		 * Temp name of the file
-		 * @var
+		 * @var string
 		 */
 		private $tempName;
+
+		/**
+		 * The size of the file being used.
+		 * @var int
+		 */
+		private $fileSize;
 
 		/**
 		 * Hashed name of the file
@@ -61,11 +55,11 @@
 		{
 			$this->maxSize = Utils::$maxSize;
 
-			$this->file = $downloading;
-
 			$this->name = $downloading['name'];
 
 			$this->tempName = $downloading['tmp_name'];
+
+			$this->fileSize = $downloading["size"];
 
 			$this->hashedName = Utils::getStoredName($this->tempName);
 
@@ -75,6 +69,10 @@
 
 		}
 
+		/**
+		 * Attempt to store the file uploaded by the user
+		 * @return string
+		 */
 		public function processFile()
 		{
 
@@ -83,30 +81,45 @@
 			}
 
 			// Convert size to MB and check to see if its over the max allowed size.
-			if ($this->file["size"] > $this->maxSize) {
+			if ($this->fileSize > $this->maxSize) {
 				return "That file is too large! ";
 			}
 
-			$database = new DatabaseManager();
+			// Make sure we aren't going to get tricked into wasting DB space!
+			if (move_uploaded_file($this->tempName, $this->storingLocation)) {
+				$database = new DatabaseManager();
+				$database->addFile($this->hashedName, $this->name);
+				return "Upload complete ";
+			} else {
+				return "Upload error " . $this->storingLocation . " ";
+			}
 
-			$database->addFile($this->hashedName, $this->name);
 
-			move_uploaded_file($this->tempName, $this->storingLocation);
-
-			return "Upload complete ";
 
 		}
 
+		/**
+		 * Hashed file name
+		 * @return string
+		 */
 		public function fileHash()
 		{
 			return $this->hashedName;
 		}
 
+		/**
+		 * Normal file name
+		 * @return mixed
+		 */
 		public function fileName()
 		{
 			return $this->name;
 		}
 
+		/**
+		 * Download link
+		 * @return string
+		 */
 		public function getDownloadLink()
 		{
 			return $this->downloadLink;

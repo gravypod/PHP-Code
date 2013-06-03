@@ -27,14 +27,13 @@
 	</head>
 	<body class="body text-center">
 		<div class="container">
-   	 		<form action="" method="post" enctype="multipart/form-data" class="main">
-      			<h2 class="heading text-center">Choose a File</h2>
-				<input hidden="true" type=”hidden” name=”upload” value=”true”>
+			<div class="main">
+      			<h2 class="heading">Choose a File</h2>
         		<button type="button" class="btn btn-large" onclick="fileChoose()">Choose Files</button>
-        		<input style="display: none;" type="file" name="file" multiple="multiple" id="file">
         		<button class="btn btn-large btn-primary" type="submit" id="submit">Upload</button>
-    		</form>
-    		<div id="uploaded" class="main" style="display: none;">
+				<input hidden="true" type="file" name="file" multiple="multiple" id="file">
+			</div>
+    		<div id="uploaded" class="main" hidden="true">
         		<h2>Uploaded Files</h2>
 
         		<div class="progress progress-striped active">
@@ -46,5 +45,5 @@
     		</noscript>
 		</div>
 	</body>
-	<script src="assets/JS/uploader.js"></script>
+	<script src="./assets/JS/uploader.js"></script>
 </html>
