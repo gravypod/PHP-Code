@@ -1,75 +1,50 @@
 <?php
 
-	include_once "StringManager.php";
+	include_once "./assets/PHP/StringManager.php";
 
-	header("Content-type: image/png");
+	include_once "./assets/PHP/Utils.php";
 
-	if (!isset($_POST["type"])) {
-		if (!isset($_GET["type"])) {
-			$innerFiles = glob('./types/*');
-			$sigDir = $innerFiles[array_rand($innerFiles)] . "/";
-		} else {
-			$sigDir = "./types/" . $_GET["type"] . "/";
-		}
-	} else {
-		$sigDir = "./types/" . $_POST["type"] . "/";
-	}
+	$sigDir = Utils::sigDirectory();
 
-	if (!file_exists($sigDir) and !is_dir($sigDir)) {
-		$innerFiles = glob('./types/*');
-		$sigDir = $innerFiles[array_rand($innerFiles)] . "/";
-	}
+	$line = Utils::getQuote($sigDir);
 
 	$startX = 5; // where the text will start
+
 	$startY = 30; // where the text will start
-	$fontSize = 20; // Size of the font
-	$lineJump = 23; // How much space to skip when writing a new line (y axis)
-	$imageFileName = $sigDir . "blankSig.jpg";
-	$fontFileName = "./font.ttf";
-	// Text colour
+
+	$fontHeight = 20; // Size of the font
+
+	$fontWidth = 12;
+
+	$spaceBetweenLines = 3;
+
+	$lineJump = $fontHeight + $spaceBetweenLines; // How much space to skip when writing a new line (y axis)
+
+	$headTemplate = Utils::findHead($sigDir); // The image file to render text on
+
+	$fontFileName = "./assets/font/font.ttf"; // The font file
+
+	// Text colour ( http://www.rapidtables.com/web/color/RGB_Color.htm )
 	$red = 255;
 	$green = 255;
 	$blue = 255;
 
-	if (!isset($_POST["text"])) {
-		if (!isset($_GET["text"])) {
-			$f_contents = file($sigDir . "quotes.txt");
-			$line = $f_contents[array_rand($f_contents)];
-		} else {
-			$line = $_GET["text"];
-		}
-	} else {
-		$line = $_POST["text"];
-	}
+	$stringManager = new StringManager($fontWidth, $fontHeight, $lineJump, $line);
 
-	$imageInfo = getimagesize($imageFileName); // load our image
-	$imageType = $imageInfo[2];
-
-	switch ($imageType) {
-		case IMAGETYPE_GIF:
-			$image = imagecreatefromgif($imageFileName);
-			break;
-		case IMAGETYPE_JPEG:
-			$image = imagecreatefromjpeg($imageFileName);
-			break;
-		case IMAGETYPE_PNG:
-			$image = imagecreatefrompng($imageFileName);
-			break;
-	}
-
+	$image = Utils::createImageObject($stringManager->getWidth(), $headTemplate);
 
 	$textColour = imagecolorallocate($image, $red, $green, $blue);
 
-	$stringManager = new StringManager($line);
 	$lines = $stringManager->getLines();
 
 	foreach ($lines as $q) {
-		imagettftext($image, $fontSize, 0, $startX, $startY, $textColour, $fontFileName, $q);
-		$startY += 23;
+		imagettftext($image, $fontHeight, 0, $startX, $startY, $textColour, $fontFileName, $q);
+		$startY += $lineJump;
 	}
+
+
+	header("Content-type: image/png");
 
 	imagepng($image);
 
 	imagedestroy($image);
-
-
